@@ -13,17 +13,17 @@ class ProductController {
     //todo adicionar upload de imagem e integrar com firebase
     //pegar id do user pelo request
     // const user = request.user.id
-    const { name, brand, type, price, description, phone, images, user, uf, city, street, number, lat, long } = request.body;
+    const { name, brand, type, price, description, phone, user, uf, city, street, number, lat, long } = request.body;
     await getManager().transaction(async transactionalEntityManager => {
 
       const productRepository = transactionalEntityManager.getRepository(Product);
       const requestImages = request.files as Express.Multer.File[];
 
       const images = requestImages.map((image) => {
-        return { path: image.filename };
+        return image.originalname;
       });
   
-      const product = productRepository.create({ name, brand, type, price, description, phone, user });
+      const product = productRepository.create({ name, brand, type, price, description, images, phone, user });
 
       const productErrors = await validate(product)
       if (productErrors.length > 0) {
