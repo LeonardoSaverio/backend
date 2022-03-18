@@ -1,44 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import bcrypt from 'bcryptjs';
-import { IsEmail, IsPhoneNumber, Length } from 'class-validator'
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryColumn } from 'typeorm';
+import { IsEmail, IsString, isString, Length } from 'class-validator'
 
-import Address from './Address';
+import Product from './Product';
 
-@Entity('users')
+@Entity('user')
 class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn()
   id: string;
 
   @Column({ length: 40, nullable: false })
+  @IsString()
   @Length(3, 40, { message: 'Nome inválido número de caracteres ultrapassados ou insuficientes.' })
   name: string;
 
   @Column({ length: 100, nullable: false })
-  @IsEmail({}, { message: "E-mail obrigatório." })
+  @IsEmail({ message: "E-mail obrigatório." })
   email: string;
 
-  @Column({ length: 20, nullable: false })
-  @IsPhoneNumber('BR', { message: 'Número de telefone inválido.' })
-  phone: string;
+  @Column({ nullable: true })
+  @IsString()
+  photo: string;
 
-  @Column({ nullable: false })
-  @Length(8, 40, { message: 'Preencha uma senha de no minímo 8 digitos.' })
-  password: string;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 8);
-  }
-  
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToOne(() => Address, address => address.user)
-  address: Address;
+  @OneToMany(() => Product, product => product.user)
+  product: Product;
 }
 
 export default User;

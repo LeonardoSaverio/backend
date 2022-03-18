@@ -2,48 +2,35 @@ import { Request, Response } from 'express';
 import { getManager } from 'typeorm';
 import User from '../models/User';
 import { validate } from 'class-validator';
-import Address from '../models/Address';
-
 class UserController {
 
-  async store(request: Request, response: Response) {
+    async create(request: Request, response: Response) {
 
-    const { name, email, phone, password, uf, city, number, lat, long } = request.body;
+        const { id, name, email, photo } = request.body;
 
-    await getManager().transaction(async transactionalEntityManager => {
+        await getManager().transaction(async transactionalEntityManager => {
 
-      const userRepository = transactionalEntityManager.getRepository(User)
-      const user = userRepository.create({ name, email, phone, password })
+            const userRepository = transactionalEntityManager.getRepository(User)
+            const user = userRepository.create({ id, name, email, photo });
 
-      const userErrors = await validate(user)
-      if (userErrors.length > 0) {
-        return response.status(400).json(userErrors.map(err => err.constraints))
-      }
+            const userErrors = await validate(user)
+            if (userErrors.length > 0) {
+                return response.status(400).json(userErrors.map(err => err.constraints));
+            }
 
-      const userExists = await userRepository.findOne({ where: { email } });
+            const userExists = await userRepository.findOne({ where: { email } });
 
-      if (userExists) {
-        return response.sendStatus(409);
-      }
+            if (userExists) {
+                return response.sendStatus(409);
+            }
 
-      await userRepository.save(user);
+            await userRepository.save(user);
 
-      const addressRepository = transactionalEntityManager.getRepository(Address)
-      const address = addressRepository.create({ uf, city, number, lat, long, user });
-      const addressErrors = await validate(address)
+            return response.json(user)
 
-      if (addressErrors.length > 0) {
-        return response.status(400).json(addressErrors.map(err => err.constraints)).end(() => {
-          throw new Error(`Error ${addressErrors.map(e => JSON.stringify(e.constraints))}`);
-        })
-      }
+        });
+    }
 
-      await addressRepository.save(address)
-
-      return response.sendStatus(200);
-
-    });
-  }
 }
 
 export default new UserController();

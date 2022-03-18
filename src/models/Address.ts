@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { IsLatitude, IsLongitude, Length, IsNumber } from 'class-validator';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { IsLatitude, IsLongitude, Length } from 'class-validator';
 
-import User from './User';
+import Product from './Product';
 
 @Entity('address')
 class Address {
@@ -16,9 +16,12 @@ class Address {
   @Length(2, 60, { message: 'Cidade Inválida.' })
   city: string;
 
+  @Column({ length: 200, nullable: false })
+  @Length(2, 200, { message: 'Rua Inválida.' })
+  street: string;
+
   @Column({ nullable: false, type: 'numeric' })
-  @IsNumber()
-  number: number
+  number: number;
 
   @Column({ nullable: false, type: 'numeric' })
   @IsLatitude({ message: 'Latitude inválida.' })
@@ -34,12 +37,11 @@ class Address {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToOne(() => User, user => user.address, {
-    cascade: ['insert', 'update']
+  @OneToOne(() => Product, product => product.address, {
+    cascade: ['insert', 'update'],
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 }
 
 export default Address;

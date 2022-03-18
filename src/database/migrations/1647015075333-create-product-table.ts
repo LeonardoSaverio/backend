@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class createAddress1647015075333 implements MigrationInterface {
+export class product1647015075333 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
         await queryRunner.createTable(new Table({
-            name: 'address',
+            name: 'product',
             columns: [
                 {
                     name: 'id',
@@ -13,40 +13,52 @@ export class createAddress1647015075333 implements MigrationInterface {
                     isPrimary: true,
                     generationStrategy: 'uuid',
                     default: 'uuid_generate_v4()',
+
                 },
                 {
-                    name: 'uf',
-                    type: 'char',
+                    name: 'name',
+                    type: 'varchar',
                     isNullable: false,
-                    length: '2'
+                    length: '120'
                 },
                 {
-                    name: 'city',
+                    name: 'brand',
                     type: 'varchar',
                     isNullable: false,
                     length: '60'
                 },
                 {
-                    name: 'number',
+                    name: 'type',
+                    type: 'varchar',
+                    isNullable: false,
+                    length: '60'
+                },
+                {
+                    name: 'price',
                     type: 'numeric',
                     isNullable: false,
                 },
                 {
-                    name: 'lat',
-                    type: 'numeric',
+                    name: 'description',
+                    type: 'varchar',
+                    isNullable: true,
+                },
+                {
+                    name: 'phone',
+                    type: 'varchar',
+                    length: '20',
                     isNullable: false,
                 },
                 {
-                    name: 'long',
-                    type: 'numeric',
+                    name: 'images',
+                    type: 'varchar[]',
                     isNullable: false,
                 },
                 {
-                    name: 'user_id',
-                    type: 'uuid',
-                    isNullable: false,
-                    generationStrategy: 'uuid',
-                    default: 'uuid_generate_v4()',
+                    name: 'status',
+                    type: 'boolean',
+                    default: false,
+                    isNullable: true,
                 },
                 {
                     name: 'created_at',
@@ -57,13 +69,18 @@ export class createAddress1647015075333 implements MigrationInterface {
                     name: 'updated_at',
                     type: 'timestamp',
                     default: 'now()'
+                },
+                {
+                    name: 'user_id',
+                    type: 'varchar',
+                    isNullable: false,
                 }
             ],
             foreignKeys: [
                 {
                     name: 'user_id',
                     columnNames: ['user_id'],
-                    referencedTableName: 'users',
+                    referencedTableName: 'user',
                     referencedColumnNames: ['id'],
                     onUpdate: 'CASCADE',
                     onDelete: 'CASCADE',
@@ -73,7 +90,7 @@ export class createAddress1647015075333 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('address');
+        await queryRunner.dropTable('product');
         await queryRunner.query('DROP EXTENSION "uuid-ossp"');
     }
 
