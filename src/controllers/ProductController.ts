@@ -52,7 +52,12 @@ class ProductController {
 
   async update(request: Request, response: Response) {
     const { id } = request.params;
-    const { name, brand, type, price, description, phone, images, status, uf, city, street, number, lat, long } = request.body;
+    const { name, brand, type, price, description, phone, status, uf, city, street, number, lat, long } = request.body;
+    const requestImages = request.files as Express.Multer.File[];
+
+    const images = requestImages.map((image) => {
+      return image.filename;
+    });
 
     await getManager().transaction(async transactionalEntityManager => {
       const productRepository = transactionalEntityManager.getRepository(Product);
