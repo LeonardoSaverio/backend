@@ -32,7 +32,6 @@ class Product {
   images: string[];
 
   @Column("boolean", { default: false })
-  @IsBoolean({ message: 'Insira um valor booleano em status' })
   status: boolean
 
   @CreateDateColumn()

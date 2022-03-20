@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { getManager, getRepository } from 'typeorm';
 import { validate } from 'class-validator';
 import { v4 } from 'uuid';
+import productView from '../views/product-view';
 
 import admin from '../config/firebase-config';
 import Address from '../models/Address';
@@ -20,7 +21,7 @@ class ProductController {
       const requestImages = request.files as Express.Multer.File[];
 
       const images = requestImages.map((image) => {
-        return image.originalname;
+        return image.filename;
       });
   
       const product = productRepository.create({ name, brand, type, price, description, images, phone, user });
@@ -108,18 +109,18 @@ class ProductController {
 
   async index(request: Request, response: Response) {
     const productRepository = getRepository(Product);
-    const products = await productRepository.find();
-    return response.status(200).json(products);
+    const products = await productRepository.find({relations: ['address']});
+    return response.status(200).json(productView.renderMany(products));
   }
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
     const productRepository = getRepository(Product);
-    const product = await productRepository.findOne(id);
+    const product = await productRepository.findOne(id, { relations: ['address']});
     if (!product) {
       return response.sendStatus(404);
     }
-    return response.status(200).json(product);
+    return response.status(200).json(productView.render(product));
   }
 
   async delete(request: Request, response: Response) {
