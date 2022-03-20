@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from "multer";
+import multerConfig from './config/multer'; 
 
 import authMiddlewareFirebase from './middleware/authMiddlewareFirebase';
 
@@ -7,8 +8,8 @@ import UserController from './controllers/UserController';
 import ProductController from './controllers/ProductController';
 import MyProductController from './controllers/MyProductController';
 
-const upload = multer();
 const router = Router();
+const upload = multer(multerConfig);
 
 router.post('/register', UserController.create);
 
