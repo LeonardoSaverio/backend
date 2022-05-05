@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "start": "build && node dist/src/index.js",
     "dev": "ts-node-dev -r dotenv/config --transpile-only --ignore-watch node_modules --files src/server.ts",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
   },
