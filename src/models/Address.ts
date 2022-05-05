@@ -37,9 +37,7 @@ class Address {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToOne(() => Product, product => product.address, {
-    cascade: ['insert', 'update'],
-  })
+  @OneToOne(() => Product, product => product.address, { onDelete: "CASCADE", onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

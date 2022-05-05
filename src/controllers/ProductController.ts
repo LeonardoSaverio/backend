@@ -1,20 +1,17 @@
 import { Request, Response } from 'express';
-import { getManager, getRepository } from 'typeorm';
+import { getManager, getRepository, Equal } from 'typeorm';
 import { validate } from 'class-validator';
-import { v4 } from 'uuid';
 import productView from '../views/product-view';
 
-import admin from '../config/firebase-config';
 import Address from '../models/Address';
-import Product from '../models/Product';
+import Product, { StatusAd } from '../models/Product';
 
 class ProductController {
 
   async create(request: Request, response: Response) {
-    //todo adicionar upload de imagem e integrar com firebase
-    //pegar id do user pelo request
-    // const user = request.user.id
-    const { name, brand, type, price, description, phone, user, uf, city, street, number, lat, long } = request.body;
+    const user = request.user.user_id;
+
+    const { name, brand, type, price, description, phone, uf, statusAd, adType, city, street, number, lat, long } = request.body;
     await getManager().transaction(async transactionalEntityManager => {
 
       const productRepository = transactionalEntityManager.getRepository(Product);
@@ -23,8 +20,8 @@ class ProductController {
       const images = requestImages.map((image) => {
         return image.filename;
       });
-  
-      const product = productRepository.create({ name, brand, type, price, description, images, phone, user });
+
+      const product = productRepository.create({ name, brand, type, price, description, images, phone, statusAd, adType, user });
 
       const productErrors = await validate(product)
       if (productErrors.length > 0) {
@@ -52,7 +49,7 @@ class ProductController {
 
   async update(request: Request, response: Response) {
     const { id } = request.params;
-    const { name, brand, type, price, description, phone, status, uf, city, street, number, lat, long } = request.body;
+    const { name, brand, type, price, description, phone, statusAd, adType, uf, city, street, number, lat, long } = request.body;
     const requestImages = request.files as Express.Multer.File[];
 
     const images = requestImages.map((image) => {
@@ -74,8 +71,9 @@ class ProductController {
       product.price = price ? price : product.price
       product.description = description ? description : product.description
       product.phone = phone ? phone : product.phone
-      product.status = status
-      product.images = images ? images : product.images
+      product.statusAd = statusAd ? statusAd : product.statusAd
+      product.adType = adType ? adType : product.adType
+      product.images = images.length > 0 ? images : product.images
 
       const productErrors = await validate(product)
       if (productErrors.length > 0) {
@@ -114,14 +112,29 @@ class ProductController {
 
   async index(request: Request, response: Response) {
     const productRepository = getRepository(Product);
-    const products = await productRepository.find({relations: ['address']});
+    let products = [] as Product[];
+
+    const uf = request.query.uf;
+    const city = request.query.city;
+    if (uf || city) {
+
+      products = await productRepository.find({
+        relations: ['address'], where: [
+          { address: { uf }, statusAd: StatusAd.ANNOUNCED },
+          { address: { city }, statusAd: StatusAd.ANNOUNCED }
+        ]
+      });
+    } else {
+      products = await productRepository.find({ relations: ['address'], where: { statusAd: StatusAd.ANNOUNCED } });
+    }
+
     return response.status(200).json(productView.renderMany(products));
   }
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
     const productRepository = getRepository(Product);
-    const product = await productRepository.findOne(id, { relations: ['address']});
+    const product = await productRepository.findOne(id, { relations: ['address'] });
     if (!product) {
       return response.sendStatus(404);
     }

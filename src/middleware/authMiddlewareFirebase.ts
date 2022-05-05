@@ -1,6 +1,5 @@
 import admin from '../config/firebase-config';
 import { Request, Response, NextFunction } from 'express';
-import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 
 interface TokenPayload {
     id: string;
@@ -14,10 +13,11 @@ interface TokenPayload {
 class AuthMiddleware {
 	async decodeToken(request: Request, response: Response, next: NextFunction) {
 		const token = request.headers?.authorization?.split(' ')[1];
+		
 		if (!token) {
 			return response.json({ message: 'unauthorized' })
 		}
-
+		
 		try {
 			const decodeValue = await admin.auth().verifyIdToken(token);
 			if (decodeValue) {

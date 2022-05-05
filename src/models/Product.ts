@@ -4,6 +4,18 @@ import { IsBoolean, IsDecimal, isDecimal, IsNumber, IsPhoneNumber } from 'class-
 import User from './User';
 import Address from './Address';
 
+export enum AdType {
+  SALE = 'SALE',
+  RENT = 'RENT',
+}
+
+export enum StatusAd {
+  SOLD = 'SOLD',
+  RENTED = 'RENTED',
+  ANNOUNCED = 'ANNOUNCED',
+}
+
+
 @Entity('product')
 class Product {
   @PrimaryGeneratedColumn('uuid')
@@ -31,8 +43,20 @@ class Product {
   @Column("varchar", { array: true })
   images: string[];
 
-  @Column("boolean", { default: false })
-  status: boolean
+  @Column({
+    type: 'enum',
+    enum: AdType,
+    array: true,
+    default: [AdType.SALE]
+  })
+  adType: AdType[];
+
+  @Column({
+    type: 'enum',
+    enum: StatusAd,
+    default: StatusAd.ANNOUNCED
+  })
+  statusAd: StatusAd;
 
   @CreateDateColumn()
   created_at: Date;
@@ -40,7 +64,11 @@ class Product {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToOne(() => Address, address => address.product)
+  @OneToOne(() => Address, address => address.product, {
+    eager: true, 
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   address: Address;
 
   @ManyToOne(() => User, user => user.product, {

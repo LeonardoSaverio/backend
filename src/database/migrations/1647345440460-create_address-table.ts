@@ -63,7 +63,8 @@ export class createAddress1647345440460 implements MigrationInterface {
                     isNullable: false,
                     generationStrategy: 'uuid',
                     default: 'uuid_generate_v4()',
-                }
+                },
+                
             ],
             foreignKeys: [
                 {
@@ -73,8 +74,8 @@ export class createAddress1647345440460 implements MigrationInterface {
                     referencedColumnNames: ['id'],
                     onUpdate: 'CASCADE',
                     onDelete: 'CASCADE',
-                },
-            ]
+                }
+            ],
         }));
     }
 

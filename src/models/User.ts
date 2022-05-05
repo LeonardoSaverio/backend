@@ -8,7 +8,7 @@ class User {
   @PrimaryColumn()
   id: string;
 
-  @Column({ length: 40, nullable: false })
+  @Column({ length: 40, nullable: true })
   @IsString()
   @Length(3, 40, { message: 'Nome inválido número de caracteres ultrapassados ou insuficientes.' })
   name: string;

@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { AdType, StatusAd } from '../../models/Product';
 
 export class product1647015075333 implements MigrationInterface {
 
@@ -55,9 +56,21 @@ export class product1647015075333 implements MigrationInterface {
                     isNullable: false,
                 },
                 {
-                    name: 'status',
-                    type: 'boolean',
-                    default: false,
+                    name: 'adType',
+                    type: 'enum',
+                    isArray: true,
+                    enum: [AdType.SALE, AdType.RENT],
+                    enumName: 'adType_enum',
+                    default: `'{${AdType.RENT}}'`,
+                    isNullable: true,
+
+                },
+                {
+                    name: 'statusAd',
+                    type: 'enum',
+                    enum: [StatusAd.SOLD, StatusAd.RENTED, StatusAd.ANNOUNCED],
+                    enumName: 'statusAd_enum',
+                    default: `'${StatusAd.ANNOUNCED}'`,
                     isNullable: true,
                 },
                 {
@@ -74,7 +87,7 @@ export class product1647015075333 implements MigrationInterface {
                     name: 'user_id',
                     type: 'varchar',
                     isNullable: false,
-                }
+                },
             ],
             foreignKeys: [
                 {
@@ -84,8 +97,8 @@ export class product1647015075333 implements MigrationInterface {
                     referencedColumnNames: ['id'],
                     onUpdate: 'CASCADE',
                     onDelete: 'CASCADE',
-                },
-            ]
+                }
+            ],
         }));
     }
 
