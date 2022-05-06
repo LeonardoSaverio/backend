@@ -23,20 +23,4 @@ router.delete('/product/:id', ProductController.delete);
 router.get('/myproduct', MyProductController.index);
 
 
-
-router.get('/home', authMiddlewareFirebase.decodeToken, (request: Request, response: Response) => {
-    console.log(request.user)
-    return response.json({
-        message: "home com middleware"
-    })
-})
-
-router.get('/home2', (request: Request, response: Response) => {
-    console.log(request.user)
-    return response.json({
-        message: "home sem middleware"
-    })
-})
-
-
 export default router;
