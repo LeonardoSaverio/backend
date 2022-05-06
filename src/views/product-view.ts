@@ -11,7 +11,7 @@ export default {
       price: product.price,
       description: product.description,
       phone: product.phone,
-      images: product.images.map(image => `http://${process.env.IMAGE_ADDRESS}/images/${image}`),
+      images: product.images.map(image => `${process.env.IMAGE_ADDRESS}/images/${image}`),
       statusAd: product.statusAd,
       adType: product.adType,
       address: addressView.render(product.address),
