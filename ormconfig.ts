@@ -1,7 +1,7 @@
 export = {
   "type": "postgres",
   "url": process.env.DATABASE_URL,
-  "ssl": { rejectUnauthorized: false },
+  // "ssl": { rejectUnauthorized: false },
   "logging": false,
   "entities": [
     process.env.PROD ? "dist/src/models/*.js" : "src/models/*.ts"
